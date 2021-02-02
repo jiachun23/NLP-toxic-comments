@@ -1,0 +1,32 @@
+<head>
+<style>
+body {
+  background-color: white;
+}
+</style>
+</head>
+<center>
+<body>
+
+<h1>TNL3221 - Natural Language Processing</h1>
+<h1>Toxic Comment Classification</h1>
+<h2>Please enter a sentence: </h2>
+
+<form action="/predict"method="post">
+
+
+
+  <input type="text" name="comment"  style="width: 500px"/>
+  
+  <button name = "predictBtn" type="submit">Predict Button!</button>
+</form>
+
+</center>
+
+<div class=page align="center">
+  {% for table in tables %}
+    {{ table|safe }}
+  {% endfor %}
+</div>
+
+</body>

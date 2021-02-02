@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify, render_template, redirect, send_file, flash
 import numpy as np
 import pandas as pd
 import string
@@ -12,8 +12,11 @@ import pickle
 
 app = Flask(__name__)
 
-
 @app.route('/')
+def main_page():
+    return render_template('index.html')
+
+@app.route('/predict', methods = ['POST'] )
 def toxic_comments_classifier():
 
     # Preprocessing steps
@@ -67,9 +70,9 @@ def toxic_comments_classifier():
         clf = pickle.load(f)
 
 
-    input_text = input("Please key in the words: ")
+    input_text = request.form['comment']
     new_sample = list(input_text.split(" "))
-
+    print(new_sample)
 
     for i in range(len(new_sample)):
         new_sample[i] = new_sample[i].lower().translate(trantab)
@@ -85,7 +88,6 @@ def toxic_comments_classifier():
         text = []
         censored = []
         j = 0
-        # exp_list = [0]
         for i in range(len(comments)):
 
             string = " "
@@ -129,12 +131,12 @@ def toxic_comments_classifier():
 
         return df_ex
 
-        predict = clf.predict(new_sample_ft)
+    predict = clf.predict(new_sample_ft)
 
-        result = show_prediction(predict.toarray(), new_sample)
-        result
+    result = show_prediction(predict.toarray(), new_sample)
 
 
+    return render_template('index.html', tables=[result.to_html()])
 
 
 if __name__ == '__main__':
