@@ -7,18 +7,19 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 from stop_words import get_stop_words
 from sklearn.feature_extraction.text import CountVectorizer
 import pickle
-
-
+import time
 
 app = Flask(__name__)
+
 
 @app.route('/')
 def main_page():
     return render_template('index.html')
 
-@app.route('/predict', methods = ['POST'] )
-def toxic_comments_classifier():
 
+@app.route('/predict', methods=['POST'])
+def toxic_comments_classifier():
+    start = time.time()
     # Preprocessing steps
     df = pd.read_csv("train.csv")
     df = df.reindex(np.random.permutation(df.index))
@@ -34,7 +35,6 @@ def toxic_comments_classifier():
         if len(comment[ix]) <= 400:
             comments.append(comment[ix])
             labels.append(label[ix])
-
 
     punctuation_edit = string.punctuation.replace('\'', '') + "0123456789"
     outtab = "                                         "
@@ -69,10 +69,10 @@ def toxic_comments_classifier():
     with open('BR-with-SVC.pkl', 'rb') as f:
         clf = pickle.load(f)
 
-
     input_text = request.form['comment']
+
     new_sample = list(input_text.split(" "))
-    print(new_sample)
+    ori_text = list(input_text.split(" "))
 
     for i in range(len(new_sample)):
         new_sample[i] = new_sample[i].lower().translate(trantab)
@@ -88,9 +88,10 @@ def toxic_comments_classifier():
         text = []
         censored = []
         j = 0
+
         for i in range(len(comments)):
 
-            string = " "
+            # string = " "
             censored.append([])
             tag.append([])
             if predict[i][0] == 1:
@@ -112,13 +113,13 @@ def toxic_comments_classifier():
                 tag[j].append('identity_hate')
 
             if tag[j]:
-                string = str("*" * len(comments[j]))
+                string = str("*" * len(ori_text[j]))
                 censored[j].append(string)
 
             if not tag[j]:
                 tag[j].append('None')
 
-            text.append(comments[i])
+            text.append(ori_text[i])
             tag[j] = ', '.join(tag[j])
             censored[j] = ' '.join(censored[j])
             j += 1
@@ -136,7 +137,23 @@ def toxic_comments_classifier():
     result = show_prediction(predict.toarray(), new_sample)
 
 
-    return render_template('index.html', tables=[result.to_html()])
+    censored_sentence = result['Censored text'].values.tolist()
+    final = []
+    for i in range(len(censored_sentence)):
+        if censored_sentence[i].__contains__("*"):
+
+            final.append(censored_sentence[i])
+        else:
+
+            final.append(ori_text[i])
+
+    final = ' '.join(final)
+
+    end = time.time()
+
+    time_taken = end - start
+
+    return render_template('index.html', tables=[result.to_html()], comment_here=final, time_here=time_taken)
 
 
 if __name__ == '__main__':

@@ -3,30 +3,42 @@
 body {
   background-color: white;
 }
+
+.page {
+  text-align: center;
+}
 </style>
 </head>
 <center>
 <body>
 
 <h1>TNL3221 - Natural Language Processing</h1>
-<h1>Toxic Comment Classification</h1>
-<h2>Please enter a sentence: </h2>
+<h1>Toxic Comment Classification with SVC Classifier</h1>
+<h2>Please enter a sentence</h2>
 
 <form action="/predict"method="post">
 
 
 
   <input type="text" name="comment"  style="width: 500px"/>
-  
+
   <button name = "predictBtn" type="submit">Predict Button!</button>
 </form>
 
-</center>
-
-<div class=page align="center">
   {% for table in tables %}
     {{ table|safe }}
   {% endfor %}
-</div>
+
+<h4>Censored Sentence (if applicable):</h4>
+
+{{ comment_here }}
+
+<h4>Execution Time (in seconds): </h4>
+
+{{ time_here }}
+</center>
+
+
+
 
 </body>
