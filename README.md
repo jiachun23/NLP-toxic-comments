@@ -5,7 +5,6 @@ This Project will accept a sentence and detect the toxicity of the sentence.
 
 
 Done by:
-Tan Jia Chun
-Tan Yi Fan
-Lim Zhou Yi 
-Leong Boon Sheng
+Tan Jia Chun , Tan Yi Fan , Lim Zhou Yi , Leong Boon Sheng
+From
+MMU AI
